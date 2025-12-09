@@ -1,0 +1,67 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  smb-s3-sync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: smb-s3-sync:latest
+    container_name: smb-s3-sync
+    
+    environment:
+      # AWS Credentials (NO hardcodear, usar secrets)
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+      
+      # SMB Config
+      - SMB_SERVER=${SMB_SERVER}
+      - SMB_SHARE=${SMB_SHARE}
+      - SMB_USER=${SMB_USER}
+      - SMB_PASSWORD=${SMB_PASSWORD}
+      - SMB_DOMAIN=${SMB_DOMAIN:-}
+      
+      # S3 Config
+      - S3_BUCKET=${S3_BUCKET}
+      - S3_PREFIX=${S3_PREFIX:-}
+      - S3_STORAGE_CLASS=${S3_STORAGE_CLASS:-INTELLIGENT_TIERING}
+      
+      # Sync Config
+      - MAX_WORKERS=${MAX_WORKERS:-50}
+      - DRY_RUN=${DRY_RUN:-true}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+      - ./cache:/tmp/cache
+    
+    working_dir: /app
+    
+    # No ejecutar automáticamente
+    command: /bin/bash
+    
+    # Mantener contenedor vivo
+    stdin_open: true
+    tty: true
+
+  # Servicio mock para testing sin SMB real
+  mock-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mock-test
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_BUCKET=${S3_BUCKET}
+      - MOCK_MODE=true
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+      - ./test-data:/app/test-data
+    command: python src/sync.py --mock
+    stdin_open: true
+    tty: true
