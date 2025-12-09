@@ -29,7 +29,7 @@ class Config:
     
     # Mock
     mock_mode: bool = os.getenv('MOCK_MODE', 'false').lower() == 'true'
-    mock_num_files: int = int(os.getenv('MOCK_NUM_FILES', '1000'))
+    mock_num_files: int = int(os.getenv('MOCK_NUM_FILES', '10'))
     
     def __post_init__(self):
         """Validaciones"""

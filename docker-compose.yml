@@ -3,6 +3,8 @@ version: '3.8'
 
 services:
   smb-s3-sync:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,7 +15,7 @@ services:
       # AWS Credentials (NO hardcodear, usar secrets)
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-eu-south-2}
       
       # SMB Config
       - SMB_SERVER=${SMB_SERVER}
@@ -48,6 +50,8 @@ services:
 
   # Servicio mock para testing sin SMB real
   mock-test:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
@@ -55,7 +59,7 @@ services:
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-eu-south-2}
       - S3_BUCKET=${S3_BUCKET}
       - MOCK_MODE=true
     volumes:

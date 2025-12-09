@@ -181,7 +181,7 @@ def create_mock_data(base_path: Path, num_files: int = 1000):
 def main():
     parser = argparse.ArgumentParser(description='Optimized SMB to S3 sync')
     parser.add_argument('--mock', action='store_true', help='Use mock data instead of SMB')
-    parser.add_argument('--mock-files', type=int, default=1000, help='Number of mock files')
+    parser.add_argument('--mock-files', type=int, default=100, help='Number of mock files')
     args = parser.parse_args()
     
     # Configuración
